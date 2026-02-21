@@ -11,6 +11,8 @@ const SplashScreen = ({ navigation }) => {
     return () => clearTimeout(timer);
   }, []);
 
+
+
   return (
     <View style={styles.container}>
       <Image
