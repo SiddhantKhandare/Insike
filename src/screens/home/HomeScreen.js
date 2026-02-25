@@ -1,11 +1,20 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { SafeAreaView, FlatList } from "react-native";
+import StoryList from "../../components/story/StoryList";
+import PostCard from "../../components/feed/PostCard";
+import { dummyPosts } from "../../data/dummyPosts";
 
 const HomeScreen = () => {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Home Screen</Text>
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <FlatList
+        ListHeaderComponent={<StoryList />}
+        data={dummyPosts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <PostCard post={item} />}
+        showsVerticalScrollIndicator={false}
+      />
+    </SafeAreaView>
   );
 };
 
