@@ -1,11 +1,18 @@
-import React, { useState } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const PostCard = ({ post }) => {
-
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
+
+  const lastTap = useRef(null);
 
   const toggleLike = () => {
     if (liked) {
@@ -16,19 +23,33 @@ const PostCard = ({ post }) => {
     setLiked(!liked);
   };
 
+  const handleDoubleTap = () => {
+    const now = Date.now();
+
+    if (lastTap.current && now - lastTap.current < 300) {
+      if (!liked) {
+        setLiked(true);
+        setLikesCount((prev) => prev + 1);
+      }
+    }
+
+    lastTap.current = now;
+  };
+
   return (
     <View style={styles.container}>
-      
-      {/* Header */}
+      {/* Post Header */}
       <View style={styles.header}>
         <Image source={{ uri: post.profilePic }} style={styles.profilePic} />
         <Text style={styles.username}>{post.username}</Text>
       </View>
 
-      {/* Post Image */}
-      <Image source={{ uri: post.postImage }} style={styles.postImage} />
+      {/* Post Image with Double Tap */}
+      <TouchableOpacity activeOpacity={1} onPress={handleDoubleTap}>
+        <Image source={{ uri: post.postImage }} style={styles.postImage} />
+      </TouchableOpacity>
 
-      {/* Actions Row */}
+      {/* Action Icons */}
       <View style={styles.actionsRow}>
         <View style={styles.leftActions}>
           <TouchableOpacity onPress={toggleLike}>
@@ -36,32 +57,32 @@ const PostCard = ({ post }) => {
               name={liked ? "heart" : "heart-outline"}
               size={26}
               color={liked ? "red" : "black"}
-              style={styles.actionIcon}
+              style={styles.icon}
             />
           </TouchableOpacity>
 
           <Icon
             name="chatbubble-outline"
             size={24}
-            style={styles.actionIcon}
+            style={styles.icon}
           />
 
           <Icon
             name="paper-plane-outline"
             size={24}
-            style={styles.actionIcon}
+            style={styles.icon}
           />
         </View>
 
         <Icon name="bookmark-outline" size={24} />
       </View>
 
-      {/* Likes Count */}
+      {/* Likes */}
       <Text style={styles.likes}>{likesCount} likes</Text>
 
       {/* Caption */}
       <Text style={styles.caption}>
-        <Text style={{ fontWeight: "bold" }}>{post.username} </Text>
+        <Text style={styles.username}>{post.username} </Text>
         {post.caption}
       </Text>
     </View>
@@ -107,9 +128,10 @@ const styles = StyleSheet.create({
 
   leftActions: {
     flexDirection: "row",
+    alignItems: "center",
   },
 
-  actionIcon: {
+  icon: {
     marginRight: 15,
   },
 
