@@ -5,6 +5,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Animated,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -13,6 +14,10 @@ const PostCard = ({ post }) => {
   const [likesCount, setLikesCount] = useState(post.likes);
 
   const lastTap = useRef(null);
+
+  // Animation values
+  const scale = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
 
   const toggleLike = () => {
     if (liked) {
@@ -23,6 +28,23 @@ const PostCard = ({ post }) => {
     setLiked(!liked);
   };
 
+  const animateHeart = () => {
+    scale.setValue(0);
+    opacity.setValue(1);
+
+    Animated.sequence([
+      Animated.spring(scale, {
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
   const handleDoubleTap = () => {
     const now = Date.now();
 
@@ -31,6 +53,8 @@ const PostCard = ({ post }) => {
         setLiked(true);
         setLikesCount((prev) => prev + 1);
       }
+
+      animateHeart();
     }
 
     lastTap.current = now;
@@ -44,9 +68,24 @@ const PostCard = ({ post }) => {
         <Text style={styles.username}>{post.username}</Text>
       </View>
 
-      {/* Post Image with Double Tap */}
+      {/* Post Image */}
       <TouchableOpacity activeOpacity={1} onPress={handleDoubleTap}>
-        <Image source={{ uri: post.postImage }} style={styles.postImage} />
+        <View>
+          <Image source={{ uri: post.postImage }} style={styles.postImage} />
+
+          {/* Floating Heart Animation */}
+          <Animated.View
+            style={[
+              styles.heartContainer,
+              {
+                transform: [{ scale }],
+                opacity: opacity,
+              },
+            ]}
+          >
+            <Icon name="heart" size={100} color="white" />
+          </Animated.View>
+        </View>
       </TouchableOpacity>
 
       {/* Action Icons */}
@@ -61,17 +100,8 @@ const PostCard = ({ post }) => {
             />
           </TouchableOpacity>
 
-          <Icon
-            name="chatbubble-outline"
-            size={24}
-            style={styles.icon}
-          />
-
-          <Icon
-            name="paper-plane-outline"
-            size={24}
-            style={styles.icon}
-          />
+          <Icon name="chatbubble-outline" size={24} style={styles.icon} />
+          <Icon name="paper-plane-outline" size={24} style={styles.icon} />
         </View>
 
         <Icon name="bookmark-outline" size={24} />
@@ -117,6 +147,12 @@ const styles = StyleSheet.create({
   postImage: {
     width: "100%",
     height: 400,
+  },
+
+  heartContainer: {
+    position: "absolute",
+    top: "40%",
+    left: "40%",
   },
 
   actionsRow: {
