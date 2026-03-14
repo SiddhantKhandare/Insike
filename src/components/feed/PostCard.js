@@ -8,22 +8,24 @@ import {
   Animated,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
 
 const PostCard = ({ post }) => {
+  const navigation = useNavigation();
+
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
 
   const lastTap = useRef(null);
 
-  // Animation values
   const scale = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
 
   const toggleLike = () => {
     if (liked) {
-      setLikesCount(likesCount - 1);
+      setLikesCount((prev) => prev - 1);
     } else {
-      setLikesCount(likesCount + 1);
+      setLikesCount((prev) => prev + 1);
     }
     setLiked(!liked);
   };
@@ -73,7 +75,7 @@ const PostCard = ({ post }) => {
         <View>
           <Image source={{ uri: post.postImage }} style={styles.postImage} />
 
-          {/* Floating Heart Animation */}
+          {/* Floating Heart */}
           <Animated.View
             style={[
               styles.heartContainer,
@@ -88,7 +90,7 @@ const PostCard = ({ post }) => {
         </View>
       </TouchableOpacity>
 
-      {/* Action Icons */}
+      {/* Action Row */}
       <View style={styles.actionsRow}>
         <View style={styles.leftActions}>
           <TouchableOpacity onPress={toggleLike}>
@@ -100,7 +102,12 @@ const PostCard = ({ post }) => {
             />
           </TouchableOpacity>
 
-          <Icon name="chatbubble-outline" size={24} style={styles.icon} />
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Comments")}
+          >
+            <Icon name="chatbubble-outline" size={24} style={styles.icon} />
+          </TouchableOpacity>
+
           <Icon name="paper-plane-outline" size={24} style={styles.icon} />
         </View>
 

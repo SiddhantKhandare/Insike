@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SplashScreen from "../screens/splash/SplashScreen";
 import BottomTabs from "./BottomTabs";
+import CommentsScreen from "../screens/comments/CommentsScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -13,6 +14,7 @@ const RootNavigator = () => {
             <Stack.Navigator screenOptions={{headerShown : false}}>
                 <Stack.Screen name="Splash" component={SplashScreen} />
                 <Stack.Screen name="MainTabs" component={BottomTabs} />
+                <Stack.Screen name="Comments" component={CommentsScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
