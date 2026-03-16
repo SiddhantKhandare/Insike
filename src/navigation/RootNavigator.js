@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SplashScreen from "../screens/splash/SplashScreen";
 import BottomTabs from "./BottomTabs";
 import CommentsScreen from "../screens/comments/CommentsScreen";
+import CreatePostScreen from "../screens/create/CreatePostScreen";
+
 
 
 const Stack = createNativeStackNavigator();
@@ -15,6 +17,7 @@ const RootNavigator = () => {
                 <Stack.Screen name="Splash" component={SplashScreen} />
                 <Stack.Screen name="MainTabs" component={BottomTabs} />
                 <Stack.Screen name="Comments" component={CommentsScreen} />
+                <Stack.Screen name="CreatePost" component={CreatePostScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

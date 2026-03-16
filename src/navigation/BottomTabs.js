@@ -21,13 +21,17 @@ const BottomTabs = () => {
 
           if (route.name === "Home")
             iconName = focused ? "home" : "home-outline";
-          if (route.name === "Search")
+
+          else if (route.name === "Search")
             iconName = focused ? "search" : "search-outline";
-          if (route.name === "Reels")
+
+          else if (route.name === "Reels")
             iconName = focused ? "play-circle" : "play-circle-outline";
-          if (route.name === "Activity")
+
+          else if (route.name === "Activity")
             iconName = focused ? "heart" : "heart-outline";
-          if (route.name === "Profile")
+
+          else if (route.name === "Profile")
             iconName = focused ? "person" : "person-outline";
 
           return <Icon name={iconName} size={24} color={color} />;
@@ -36,11 +40,35 @@ const BottomTabs = () => {
         tabBarInactiveTintColor: "#999",
       })}
     >
+      {/* 1 */}
       <Tab.Screen name="Home" component={HomeScreen} />
+
+      {/* 2 */}
       <Tab.Screen name="Search" component={SearchScreen} />
+
+      {/* 3 👉 CREATE BUTTON (CENTER) */}
+      <Tab.Screen
+        name="Create"
+        component={HomeScreen} // dummy
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Icon name="add-circle-outline" size={30} color={color} />
+          ),
+        }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate("CreatePost");
+          },
+        })}
+      />
+
+      {/* 4 */}
       <Tab.Screen name="Reels" component={ReelsScreen} />
-      <Tab.Screen name="Activity" component={ActivityScreen} />
+
+      {/* 5 */}
       <Tab.Screen name="Profile" component={ProfileScreen} />
+
     </Tab.Navigator>
   );
 };
