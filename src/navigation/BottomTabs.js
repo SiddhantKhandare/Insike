@@ -1,11 +1,11 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
 import HomeScreen from "../screens/home/HomeScreen";
 import SearchScreen from "../screens/search/SearchScreen";
 import ReelsScreen from "../screens/reels/ReelsScreen";
-import ActivityScreen from "../screens/activity/ActivityScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
@@ -16,6 +16,14 @@ const BottomTabs = () => {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false,
+
+        tabBarStyle: {
+          height: 60,
+          borderTopWidth: 0.3,
+          borderColor: "#ddd",
+          backgroundColor: "#fff",
+        },
+
         tabBarIcon: ({ focused, color }) => {
           let iconName;
 
@@ -28,31 +36,39 @@ const BottomTabs = () => {
           else if (route.name === "Reels")
             iconName = focused ? "play-circle" : "play-circle-outline";
 
-          else if (route.name === "Activity")
-            iconName = focused ? "heart" : "heart-outline";
-
           else if (route.name === "Profile")
             iconName = focused ? "person" : "person-outline";
 
           return <Icon name={iconName} size={24} color={color} />;
         },
+
         tabBarActiveTintColor: "#000",
         tabBarInactiveTintColor: "#999",
       })}
     >
-      {/* 1 */}
       <Tab.Screen name="Home" component={HomeScreen} />
 
-      {/* 2 */}
       <Tab.Screen name="Search" component={SearchScreen} />
 
-      {/* 3 👉 CREATE BUTTON (CENTER) */}
+      {/* CENTER + BUTTON */}
       <Tab.Screen
         name="Create"
-        component={HomeScreen} // dummy
+        component={HomeScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <Icon name="add-circle-outline" size={30} color={color} />
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 10,
+                borderWidth: 2,
+                borderColor: "#000",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Icon name="add" size={20} color={color} />
+            </View>
           ),
         }}
         listeners={({ navigation }) => ({
@@ -63,12 +79,9 @@ const BottomTabs = () => {
         })}
       />
 
-      {/* 4 */}
       <Tab.Screen name="Reels" component={ReelsScreen} />
 
-      {/* 5 */}
       <Tab.Screen name="Profile" component={ProfileScreen} />
-
     </Tab.Navigator>
   );
 };
