@@ -18,17 +18,12 @@ const PostCard = ({ post }) => {
 
   const lastTap = useRef(null);
 
+  // Floating heart animation
   const scale = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
 
-  const toggleLike = () => {
-    if (liked) {
-      setLikesCount((prev) => prev - 1);
-    } else {
-      setLikesCount((prev) => prev + 1);
-    }
-    setLiked(!liked);
-  };
+  // Like button animation
+  const likeScale = useRef(new Animated.Value(1)).current;
 
   const animateHeart = () => {
     scale.setValue(0);
@@ -45,6 +40,28 @@ const PostCard = ({ post }) => {
         useNativeDriver: true,
       }),
     ]).start();
+  };
+
+  const toggleLike = () => {
+    // Bounce animation
+    Animated.sequence([
+      Animated.spring(likeScale, {
+        toValue: 1.3,
+        useNativeDriver: true,
+      }),
+      Animated.spring(likeScale, {
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    if (liked) {
+      setLikesCount((prev) => prev - 1);
+    } else {
+      setLikesCount((prev) => prev + 1);
+    }
+
+    setLiked(!liked);
   };
 
   const handleDoubleTap = () => {
@@ -64,13 +81,13 @@ const PostCard = ({ post }) => {
 
   return (
     <View style={styles.container}>
-      {/* Post Header */}
+      {/* Header */}
       <View style={styles.header}>
         <Image source={{ uri: post.profilePic }} style={styles.profilePic} />
         <Text style={styles.username}>{post.username}</Text>
       </View>
 
-      {/* Post Image */}
+      {/* Image */}
       <TouchableOpacity activeOpacity={1} onPress={handleDoubleTap}>
         <View>
           <Image source={{ uri: post.postImage }} style={styles.postImage} />
@@ -81,25 +98,27 @@ const PostCard = ({ post }) => {
               styles.heartContainer,
               {
                 transform: [{ scale }],
-                opacity: opacity,
+                opacity,
               },
             ]}
           >
-            <Icon name="heart" size={100} color="white" />
+            <Icon name="heart" size={100} color="#fff" />
           </Animated.View>
         </View>
       </TouchableOpacity>
 
-      {/* Action Row */}
+      {/* Actions */}
       <View style={styles.actionsRow}>
         <View style={styles.leftActions}>
           <TouchableOpacity onPress={toggleLike}>
-            <Icon
-              name={liked ? "heart" : "heart-outline"}
-              size={26}
-              color={liked ? "red" : "black"}
-              style={styles.icon}
-            />
+            <Animated.View style={{ transform: [{ scale: likeScale }] }}>
+              <Icon
+                name={liked ? "heart" : "heart-outline"}
+                size={26}
+                color={liked ? "red" : "black"}
+                style={styles.icon}
+              />
+            </Animated.View>
           </TouchableOpacity>
 
           <TouchableOpacity
