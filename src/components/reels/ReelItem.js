@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Image } from "react-native";
 import Video from "react-native-video";
 import Icon from "react-native-vector-icons/Ionicons";
 
-const ReelItem = ({ item }) => {
+const ReelItem = ({ item, isActive }) => {
   return (
     <View style={styles.container}>
       
@@ -13,9 +13,10 @@ const ReelItem = ({ item }) => {
         style={styles.video}
         resizeMode="cover"
         repeat
+        paused={!isActive} // 🔥 KEY LINE
       />
 
-      {/* Bottom Left Content */}
+      {/* Bottom Left */}
       <View style={styles.bottomLeft}>
         <View style={styles.userRow}>
           <Image
@@ -28,7 +29,7 @@ const ReelItem = ({ item }) => {
         <Text style={styles.caption}>{item.caption}</Text>
       </View>
 
-      {/* Right Side Actions */}
+      {/* Right Actions */}
       <View style={styles.rightActions}>
         
         <View style={styles.actionItem}>
