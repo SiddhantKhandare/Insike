@@ -1,22 +1,83 @@
-import React from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
+import React, { useState, useRef } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  Animated,
+} from "react-native";
 import Video from "react-native-video";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const ReelItem = ({ item, isActive }) => {
+  const [isPaused, setIsPaused] = useState(false);
+  const [liked, setLiked] = useState(false);
+
+  const lastTap = useRef(null);
+
+  // Heart animation
+  const scale = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  const animateHeart = () => {
+    scale.setValue(0);
+    opacity.setValue(1);
+
+    Animated.sequence([
+      Animated.spring(scale, {
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const handleTap = () => {
+    const now = Date.now();
+
+    // DOUBLE TAP
+    if (lastTap.current && now - lastTap.current < 300) {
+      if (!liked) setLiked(true);
+      animateHeart();
+    } else {
+      // SINGLE TAP → pause/play
+      setIsPaused((prev) => !prev);
+    }
+
+    lastTap.current = now;
+  };
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity activeOpacity={1} onPress={handleTap} style={styles.container}>
       
-      {/* Video */}
+      {/* VIDEO */}
       <Video
         source={{ uri: item.video }}
         style={styles.video}
         resizeMode="cover"
         repeat
-        paused={!isActive} // 🔥 KEY LINE
+        paused={!isActive || isPaused} // 🔥 control play/pause
       />
 
-      {/* Bottom Left */}
+      {/* HEART ANIMATION */}
+      <Animated.View
+        style={[
+          styles.heartContainer,
+          {
+            transform: [{ scale }],
+            opacity,
+          },
+        ]}
+      >
+        <Icon name="heart" size={100} color="#fff" />
+      </Animated.View>
+
+      {/* BOTTOM LEFT */}
       <View style={styles.bottomLeft}>
         <View style={styles.userRow}>
           <Image
@@ -29,13 +90,17 @@ const ReelItem = ({ item, isActive }) => {
         <Text style={styles.caption}>{item.caption}</Text>
       </View>
 
-      {/* Right Actions */}
+      {/* RIGHT ACTIONS */}
       <View style={styles.rightActions}>
         
-        <View style={styles.actionItem}>
-          <Icon name="heart-outline" size={28} color="#fff" />
+        <TouchableOpacity style={styles.actionItem} onPress={() => setLiked(!liked)}>
+          <Icon
+            name={liked ? "heart" : "heart-outline"}
+            size={28}
+            color={liked ? "red" : "#fff"}
+          />
           <Text style={styles.actionText}>245K</Text>
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.actionItem}>
           <Icon name="chatbubble-outline" size={26} color="#fff" />
@@ -52,7 +117,7 @@ const ReelItem = ({ item, isActive }) => {
 
       </View>
 
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -68,6 +133,12 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     position: "absolute",
+  },
+
+  heartContainer: {
+    position: "absolute",
+    top: "40%",
+    left: "40%",
   },
 
   bottomLeft: {
