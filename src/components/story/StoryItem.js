@@ -1,13 +1,32 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
+import { dummyStories } from "../../data/dummyStories";
 
 const StoryItem = ({ item }) => {
+  const navigation = useNavigation();
+
   const isYourStory = item.isYourStory;
 
+  const handlePress = () => {
+    navigation.navigate("StoryViewer", {
+      stories: dummyStories,
+      index: Number(item.id) - 1, // ensure correct index
+    });
+  };
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={handlePress}>
+      
+      {/* YOUR STORY */}
       {isYourStory ? (
         <View style={styles.yourStoryContainer}>
           <Image source={{ uri: item.image }} style={styles.image} />
@@ -17,6 +36,7 @@ const StoryItem = ({ item }) => {
           </View>
         </View>
       ) : (
+        /* NORMAL STORY */
         <LinearGradient
           colors={["#feda75", "#fa7e1e", "#d62976", "#962fbf", "#4f5bd5"]}
           style={styles.gradientBorder}
@@ -27,10 +47,12 @@ const StoryItem = ({ item }) => {
         </LinearGradient>
       )}
 
+      {/* USERNAME */}
       <Text style={styles.username} numberOfLines={1}>
         {item.username}
       </Text>
-    </View>
+
+    </TouchableOpacity>
   );
 };
 
