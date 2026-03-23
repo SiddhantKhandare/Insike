@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Image,
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Animated,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -15,15 +16,21 @@ const StoryViewerScreen = ({ route, navigation }) => {
 
   const [currentIndex, setCurrentIndex] = useState(index);
 
+  const progress = useRef(new Animated.Value(0)).current;
+
   const currentStory = stories[currentIndex];
 
-  // Auto next story
+  // Animate progress
   useEffect(() => {
-    const timer = setTimeout(() => {
-      handleNext();
-    }, 3000);
+    progress.setValue(0);
 
-    return () => clearTimeout(timer);
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: 3000,
+      useNativeDriver: false,
+    }).start(({ finished }) => {
+      if (finished) handleNext();
+    });
   }, [currentIndex]);
 
   const handleNext = () => {
@@ -43,18 +50,48 @@ const StoryViewerScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       
-      {/* Story Image */}
+      {/* STORY IMAGE */}
       <Image source={{ uri: currentStory.image }} style={styles.image} />
 
-      {/* Close Button */}
-      <TouchableOpacity style={styles.close} onPress={() => navigation.goBack()}>
+      {/* PROGRESS BAR */}
+      <View style={styles.progressContainer}>
+        {stories.map((_, i) => {
+          const widthInterpolated = progress.interpolate({
+            inputRange: [0, 1],
+            outputRange: ["0%", "100%"],
+          });
+
+          return (
+            <View key={i} style={styles.progressBarBackground}>
+              {i === currentIndex && (
+                <Animated.View
+                  style={[
+                    styles.progressBar,
+                    { width: widthInterpolated },
+                  ]}
+                />
+              )}
+
+              {i < currentIndex && (
+                <View style={[styles.progressBar, { width: "100%" }]} />
+              )}
+            </View>
+          );
+        })}
+      </View>
+
+      {/* CLOSE BUTTON */}
+      <TouchableOpacity
+        style={styles.close}
+        onPress={() => navigation.goBack()}
+      >
         <Icon name="close" size={30} color="#fff" />
       </TouchableOpacity>
 
-      {/* Left Tap */}
+      {/* LEFT TAP */}
       <TouchableOpacity style={styles.left} onPress={handlePrev} />
 
-      {/* Right Tap */}
+      {/* RIGHT TAP */}
       <TouchableOpacity style={styles.right} onPress={handleNext} />
 
     </View>
@@ -75,9 +112,29 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
 
+  progressContainer: {
+    position: "absolute",
+    top: 50,
+    flexDirection: "row",
+    width: "100%",
+    paddingHorizontal: 5,
+  },
+
+  progressBarBackground: {
+    flex: 1,
+    height: 3,
+    backgroundColor: "rgba(255,255,255,0.3)",
+    marginHorizontal: 2,
+  },
+
+  progressBar: {
+    height: 3,
+    backgroundColor: "#fff",
+  },
+
   close: {
     position: "absolute",
-    top: 40,
+    top: 60,
     right: 20,
   },
 
